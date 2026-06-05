@@ -1,0 +1,2409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LifeRush AI ‑ Integrated Portal</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg-primary: #090d16;
+      --bg-card: rgba(17, 25, 40, 0.75);
+      --bg-input: rgba(10, 15, 30, 0.5);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --accent-red: #ef4444;
+      --accent-red-hover: #dc2626;
+      --text-white: #f8fafc;
+      --text-muted: #94a3b8;
+      --green-glow: rgba(34, 197, 94, 0.15);
+      --red-glow: rgba(239, 68, 68, 0.15);
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(239, 68, 68, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(15, 23, 42, 0.8) 0%, transparent 50%);
+      color: var(--text-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent-red);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-red-hover);
+    }
+
+    /* Container */
+    .app-container {
+      width: 92%;
+      max-width: 1280px;
+      margin: 0 auto;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Nav */
+    header {
+      width: 100%;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-icon {
+      background: var(--accent-red);
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+      animation: pulse-slow 3s infinite ease-in-out;
+    }
+
+    .logo-text {
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-red) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .user-badge-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-profile {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .user-name {
+      color: var(--text-white);
+      font-weight: 600;
+    }
+
+    .role-tag {
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-left: 0.35rem;
+    }
+
+    .role-donor { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+    .role-patient { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .role-admin { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: var(--transition);
+    }
+
+    .btn-logout:hover {
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    /* Main Area layout */
+    main {
+      padding: 2rem 0;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Cards & Panels */
+    .glass-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    /* Titles */
+    h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    h3 { font-size: 1.25rem; margin-bottom: 1rem; }
+
+    .section-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Grid systems */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+    .grid-dashboard { display: grid; grid-template-columns: 5fr 7fr; gap: 2rem; }
+
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-4, .grid-dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Form inputs */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 0.8rem 1rem;
+      color: var(--text-white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-red);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    /* Autocomplete Suggestions Box */
+    .suggestions-box {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      z-index: 1000;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 0.35rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: none;
+    }
+
+    .suggestion-item {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      cursor: pointer;
+      text-align: left;
+      transition: var(--transition);
+    }
+
+    .suggestion-item:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .suggestion-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    .suggestion-address {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: var(--accent-red);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-red-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-white);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
+    }
+
+    /* Tabs Bar */
+    .tabs-bar {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(10, 15, 30, 0.6);
+      padding: 0.35rem;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 2rem;
+      align-self: flex-start;
+    }
+
+    .tab-btn {
+      padding: 0.6rem 1.25rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: var(--transition);
+      text-transform: capitalize;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-white);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-red);
+      color: white;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+    }
+
+    /* Alerts and feedback logs */
+    .alert {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      border: 1px solid transparent;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.25);
+      color: #f87171;
+    }
+
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.25);
+      color: #4ade80;
+    }
+
+    /* Auth screen custom layout */
+    .auth-wrapper {
+      max-width: 1024px;
+      width: 100%;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 5fr 4fr;
+      gap: 3rem;
+      align-items: center;
+      padding: 2rem 0;
+    }
+
+    @media (max-width: 850px) {
+      .auth-wrapper {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .brand-marketing {
+        display: none;
+      }
+    }
+
+    .brand-marketing h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+    }
+
+    .brand-marketing p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .marketing-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .marketing-item {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .marketing-icon-wrapper {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--accent-red);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .marketing-item h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .marketing-item p {
+      font-size: 0.75rem;
+      line-height: 1.4;
+      margin-bottom: 0;
+    }
+
+    /* Auth Form Switcher */
+    .auth-tabs {
+      display: flex;
+      background: rgba(10, 15, 30, 0.6);
+      border-radius: 10px;
+      padding: 0.25rem;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .auth-tab-btn.active {
+      background: var(--accent-red);
+      color: white;
+    }
+
+    .forgot-link {
+      font-size: 0.75rem;
+      color: var(--accent-red);
+      text-decoration: none;
+      float: right;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+
+    /* Dashboard items */
+    .profile-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .blood-badge {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--accent-red);
+      font-weight: 800;
+      font-size: 1.15rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .eligibility-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .eligibility-circle {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .eligibility-circle.eligible {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      color: #22c55e;
+    }
+
+    .eligibility-circle.ineligible {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: var(--accent-red);
+    }
+
+    .eligibility-status-title {
+      font-size: 1.15rem;
+      font-weight: 7500;
+    }
+
+    .eligibility-reason {
+      margin-top: 1rem;
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+      color: #fca5a5;
+    }
+
+    .stat-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      font-size: 0.85rem;
+    }
+    .stat-list-item:last-child {
+      border-bottom: none;
+    }
+    .stat-list-item span:first-child { color: var(--text-muted); }
+    .stat-list-item span:last-child { font-weight: 600; }
+
+    /* Admin Mini Stat Card */
+    .admin-stat-card {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-stat-card .label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem; font-weight: 600; }
+    .admin-stat-card .value { font-size: 1.75rem; font-weight: 800; font-family: 'Outfit', sans-serif; }
+
+    /* Notification log box */
+    .notif-box {
+      max-height: 350px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-right: 0.25rem;
+    }
+
+    .notif-item {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      position: relative;
+      transition: var(--transition);
+    }
+    .notif-item:hover { border-color: rgba(255, 255, 255, 0.15); }
+    .notif-item.unread { border-left: 3px solid var(--accent-red); }
+    .notif-title { font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; }
+    .notif-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; line-height: 1.4; }
+    .notif-date { font-size: 0.65rem; color: rgba(255,255,255,0.25); margin-top: 0.5rem; display: block; }
+    
+    .notif-actions {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .notif-action-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .btn-notif-accept { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .btn-notif-accept:hover { background: rgba(34, 197, 94, 0.3); }
+    .btn-notif-decline { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .btn-notif-decline:hover { background: rgba(239, 68, 68, 0.3); }
+
+    /* Interactive Map SVG Visualizer */
+    .map-container {
+      background: #070a12;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      height: 380px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map-svg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .map-center-pin {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-red);
+      border: 2px solid white;
+      border-radius: 50%;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+      z-index: 10;
+    }
+
+    .map-location-pin {
+      position: absolute;
+      padding: 0.35rem 0.6rem;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      z-index: 5;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .map-location-pin:hover {
+      border-color: var(--accent-red);
+      transform: scale(1.05);
+    }
+    .pin-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-red);
+    }
+
+    .map-filters {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      display: flex;
+      gap: 0.35rem;
+      z-index: 20;
+    }
+
+    .map-filter-btn {
+      padding: 0.3rem 0.75rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .map-filter-btn.active {
+      background: var(--accent-red);
+      color: white;
+      border-color: var(--accent-red);
+    }
+
+    /* List group */
+    .list-group {
+      max-height: 400px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .list-item {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .list-item:hover {
+      border-color: rgba(255,255,255,0.15);
+    }
+    .list-item.selected {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    /* Chatbot Panel */
+    .chat-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 450px;
+    }
+
+    .chat-messages {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .chat-bubble {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      max-width: 85%;
+    }
+
+    .chat-bubble.assistant {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      align-self: flex-start;
+      border-top-left-radius: 0;
+    }
+
+    .chat-bubble.user {
+      background: var(--accent-red);
+      color: white;
+      align-self: flex-end;
+      border-top-right-radius: 0;
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* CSS/SVG Bar Chart for Donation History */
+    .chart-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 150px;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 1rem;
+    }
+    .chart-bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      width: 14%;
+    }
+    .chart-bar {
+      width: 100%;
+      background: var(--accent-red);
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      min-height: 5px;
+      transition: height 0.6s ease;
+      box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25);
+    }
+    .chart-month {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .chart-value {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* Twilio simulator logs */
+    .console-logs {
+      background: #020617;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #38bdf8;
+      max-height: 250px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+
+    /* Keyframes */
+    @keyframes pulse-slow {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.9; }
+    }
+
+    @keyframes pulse-sos {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    .sos-pulse-effect {
+      animation: pulse-sos 2s infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <i data-lucide="droplet" style="color: white; fill: white; width: 18px; height: 18px;"></i>
+        </div>
+        <span class="logo-text">LifeRush AI</span>
+      </div>
+      
+      <div class="user-badge-container" id="header-user-badge" style="display: none;">
+        <div class="user-profile">
+          Welcome, <span class="user-name" id="badge-name">User</span>
+          <span class="role-tag" id="badge-role">Role</span>
+        </div>
+        <button class="btn-logout" onclick="authLogout()">
+          <i data-lucide="log-out" style="width: 14px; height: 14px;"></i> Sign Out
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Alert Message Box -->
+      <div id="app-alert" class="alert">
+        <i id="alert-icon" data-lucide="alert-circle" style="width: 18px; height: 18px;"></i>
+        <span id="alert-message">Info message</span>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- AUTHENTICATION SCREEN -->
+      <!-- ============================================== -->
+      <div id="screen-auth" class="auth-wrapper" style="display: none;">
+        <div class="brand-marketing">
+          <h1>Connecting the right donor <span style="color: var(--accent-red);">in minutes.</span></h1>
+          <p>LifeRush AI leverages geospatial matching algorithms, intelligent medical record eligibility indexing, and instant automated IVR notifications to route emergency blood demands to matching nearby donors.</p>
+          
+          <div class="marketing-list">
+            <div class="marketing-item">
+              <div class="marketing-icon-wrapper"><i data-lucide="file-check-2"></i></div>
+              <div>
+                <h4>OCR Eligibility Checking</h4>
+                <p>Upload a medical sheet to run instant Hemoglobin & health validation checks.</p>
+              </div>
+            </div>
+            <div class="marketing-item">
+              <div class="marketing-icon-wrapper"><i data-lucide="route"></i></div>
+              <div>
+                <h4>Geospatial Scoring</h4>
+                <p>Computes real distance compatibility based on Overpass OSM data nodes.</p>
+              </div>
+            </div>
+            <div class="marketing-item">
+              <div class="marketing-icon-wrapper"><i data-lucide="phone-call"></i></div>
+              <div>
+                <h4>Automated Toll-Free calling</h4>
+                <p>Spawns live IVR simulator calls that request active ETA responses from donors.</p>
+              </div>
+            </div>
+            <div class="marketing-item">
+              <div class="marketing-icon-wrapper"><i data-lucide="sparkles"></i></div>
+              <div>
+                <h4>24/7 AI Medical Chat</h4>
+                <p>Clear doubts on donation intervals, food habits, and medical rules instantly.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-panel" style="margin-bottom: 0;">
+          <div class="auth-tabs">
+            <button id="tab-login-select" class="auth-tab-btn active" onclick="switchAuthTab('login')">Sign In</button>
+            <button id="tab-register-select" class="auth-tab-btn" onclick="switchAuthTab('register')">Register</button>
+          </div>
+
+          <!-- Login Sub-Form -->
+          <form id="form-login" onsubmit="event.preventDefault(); submitLogin();" style="display: block;">
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="login-email" required placeholder="you@liferush.ai" />
+            </div>
+            <div class="form-group">
+              <div style="overflow: hidden;">
+                <label>Password</label>
+                <a href="#" class="forgot-link" onclick="event.preventDefault(); toggleForgotPassword(true)">Forgot?</a>
+              </div>
+              <input type="password" id="login-password" required placeholder="••••••••" />
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+              <i data-lucide="log-in" style="width: 16px; height: 16px;"></i> Sign In
+            </button>
+          </form>
+
+          <!-- Register Sub-Form -->
+          <form id="form-register" onsubmit="event.preventDefault(); submitRegister();" style="display: none;">
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="reg-name" required placeholder="Alice Smith" />
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="reg-phone" required placeholder="1234567890" />
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="reg-email" required placeholder="alice@gmail.com" />
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="reg-password" required placeholder="••••••••" />
+              </div>
+            </div>
+            <div class="grid-3">
+              <div class="form-group">
+                <label>Blood Group</label>
+                <select id="reg-bg">
+                  <option value="">Unknown</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>City</label>
+                <input type="text" id="reg-city" required placeholder="San Francisco" />
+              </div>
+              <div class="form-group">
+                <label>State</label>
+                <input type="text" id="reg-state" required placeholder="CA" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Select Role</label>
+              <select id="reg-role" onchange="toggleRegReportUpload(this.value)">
+                <option value="donor">Donor (Can check eligibility, receive notifications)</option>
+                <option value="patient">Patient / Hospital (Can request blood, trigger SOS)</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="reg-report-container">
+              <label>Upload Medical Report (For OCR Eligibility Analysis)</label>
+              <input type="file" id="reg-report" accept="image/*,application/pdf" />
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+              <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i> Complete Registration
+            </button>
+          </form>
+
+          <!-- Forgot Password Sub-Form -->
+          <form id="form-forgot" onsubmit="event.preventDefault(); submitForgotPassword();" style="display: none;">
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="forgot-email" required placeholder="you@liferush.ai" />
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="forgot-new-password" required placeholder="••••••••" />
+            </div>
+            <div class="grid-2">
+              <button type="button" class="btn btn-secondary" onclick="toggleForgotPassword(false)">Cancel</button>
+              <button type="submit" class="btn btn-primary">Update Password</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PORTAL PORTION (LOGGED IN SCREEN) -->
+      <!-- ============================================== -->
+      <div id="screen-portal" style="display: none;">
+        
+        <!-- Navigation Tabs (Dynamic based on Role) -->
+        <div class="tabs-bar" id="dashboard-tabs">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- ========================================== -->
+        <!-- DONOR VIEW -->
+        <!-- ========================================== -->
+        <div id="view-donor" style="display: none;">
+          
+          <!-- Overview Tab -->
+          <div id="donor-tab-overview" class="donor-view-tab" style="display: none;">
+            <div class="grid-dashboard">
+              
+              <!-- Eligibility -->
+              <div class="glass-panel">
+                <div class="profile-banner">
+                  <div>
+                    <h3>Eligibility Profile</h3>
+                    <div class="section-subtitle">Real-time biochemical verification logs</div>
+                  </div>
+                  <div class="blood-badge" id="donor-blood-type">O+</div>
+                </div>
+
+                <div class="eligibility-header">
+                  <div class="eligibility-circle" id="donor-eligibility-indicator">
+                    <i data-lucide="check"></i>
+                  </div>
+                  <div>
+                    <div class="eligibility-status-title" id="donor-eligibility-status">Loading Status...</div>
+                    <div class="section-subtitle" style="margin-bottom: 0;">Verified via latest medical report scan</div>
+                  </div>
+                </div>
+
+                <div class="stat-list-item">
+                  <span>Hemoglobin (Hb)</span>
+                  <span id="donor-stat-hemoglobin">0.0 g/dL</span>
+                </div>
+                <div class="stat-list-item">
+                  <span>Platelet Count</span>
+                  <span id="donor-stat-platelets">0 /mcL</span>
+                </div>
+                <div class="stat-list-item">
+                  <span>White Blood Cells</span>
+                  <span id="donor-stat-wbc">0 /uL</span>
+                </div>
+                <div class="stat-list-item">
+                  <span>Next Eligible Date</span>
+                  <span id="donor-stat-date">--/--/----</span>
+                </div>
+                <div class="stat-list-item">
+                  <span>Risk Category</span>
+                  <span id="donor-stat-risk">Unknown</span>
+                </div>
+
+                <div class="eligibility-reason" id="donor-ineligibility-alert" style="display: none;">
+                  <strong>Ineligible:</strong> <span id="donor-ineligibility-reason">Low hemoglobin levels detected.</span>
+                </div>
+              </div>
+
+              <!-- Alerts Inbox -->
+              <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                  <div>
+                    <h3>Emergency Notification Inbox</h3>
+                    <div class="section-subtitle" style="margin-bottom: 0;">Urgent blood requests matches nearby</div>
+                  </div>
+                  <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.7rem;" onclick="markNotificationsAsRead()">
+                    Mark all read
+                  </button>
+                </div>
+
+                <div class="notif-box" id="donor-notif-list">
+                  <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Loading inbox alerts...
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- History Tab -->
+          <div id="donor-tab-history" class="donor-view-tab" style="display: none;">
+            <div class="grid-2">
+              <div class="glass-panel">
+                <h3>Donation Records</h3>
+                <div class="section-subtitle">A summary of your life-saving impact</div>
+                
+                <div class="stat-list-item" style="padding: 1rem 0;">
+                  <span>Estimated Lives Saved</span>
+                  <span style="color: #4ade80; font-size: 1.4rem; font-weight: 800;" id="donor-history-lives">0 Lives</span>
+                </div>
+                <div class="stat-list-item" style="padding: 1rem 0;">
+                  <span>Total Contributions</span>
+                  <span style="font-size: 1.25rem; font-weight: 800;" id="donor-history-total">0</span>
+                </div>
+                <div class="stat-list-item" style="padding: 1rem 0;">
+                  <span>Last Donation Date</span>
+                  <span style="font-size: 1.05rem;" id="donor-history-last">--/--/----</span>
+                </div>
+              </div>
+
+              <div class="glass-panel">
+                <h3>Monthly Donation Trends</h3>
+                <div class="section-subtitle">Contributions charted by month</div>
+                
+                <!-- Simple CSS/SVG Bar Chart -->
+                <div class="chart-container" id="history-chart">
+                  <!-- Rendered dynamically by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- PATIENT VIEW -->
+        <!-- ========================================== -->
+        <div id="view-patient" style="display: none;">
+          
+          <!-- Manage Requests Tab -->
+          <div id="patient-tab-manage" class="patient-view-tab" style="display: none;">
+            <div class="grid-dashboard">
+              
+              <!-- Requests list -->
+              <div class="glass-panel">
+                <div class="profile-banner" style="margin-bottom: 1rem;">
+                  <div>
+                    <h3>Blood Requests</h3>
+                    <div class="section-subtitle" style="margin-bottom: 0;">Select a demand to view matches</div>
+                  </div>
+                  <button class="btn btn-danger btn-sm sos-pulse-effect" onclick="triggerSOSAlert()">
+                    <i data-lucide="alert-octagon"></i> SOS Emergency
+                  </button>
+                </div>
+
+                <div class="list-group" id="patient-requests-list">
+                  <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    Loading requests...
+                  </div>
+                </div>
+              </div>
+
+              <!-- Matches container -->
+              <div class="glass-panel">
+                <h3>Matched Donors (AI Recommendation)</h3>
+                <div class="section-subtitle">Top compatible donors ranked by proximity and medical suitability</div>
+
+                <div class="list-group" id="patient-matches-list">
+                  <div style="text-align: center; padding: 4rem; color: var(--text-muted);">
+                    Select a request on the left to display matches.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Create Request Tab -->
+          <div id="patient-tab-create" class="patient-view-tab" style="display: none;">
+            <div class="glass-panel" style="max-width: 800px; margin: 0 auto;">
+              <h3>Request Blood Products</h3>
+              <div class="section-subtitle">Broadcast a localized blood requirement to nearby matching profiles</div>
+
+              <form id="form-blood-request" onsubmit="event.preventDefault(); submitBloodRequest();">
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label>Blood Group Required</label>
+                    <select id="req-bg-need">
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Units Needed</label>
+                    <input type="number" id="req-units" min="1" max="20" value="1" required />
+                  </div>
+                </div>
+
+                <div class="grid-2">
+                  <!-- Hospital Name Autocomplete -->
+                  <div class="form-group">
+                    <label>Hospital Name</label>
+                    <input type="text" id="req-hospital-name" required placeholder="Type community hospital..." oninput="searchHospitals(this.value)" autocomplete="off" />
+                    <!-- Suggestions Box -->
+                    <div id="hospital-suggestions" class="suggestions-box"></div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Hospital Location (City)</label>
+                    <input type="text" id="req-hospital-location" required placeholder="San Francisco" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Full Address</label>
+                  <input type="text" id="req-hospital-address" placeholder="100 Medical Plaza Rd, San Francisco" readonly style="background: rgba(255,255,255,0.02); color: var(--text-muted);" />
+                </div>
+
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label>Urgency Level</label>
+                    <select id="req-urgency">
+                      <option value="low">Low (Standard reserve)</option>
+                      <option value="medium" selected>Medium (Active treatment)</option>
+                      <option value="critical">Critical (Immediate SOS)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Contact Phone</label>
+                    <input type="text" id="req-contact" required placeholder="+1234567890" />
+                  </div>
+                </div>
+
+                <!-- Hidden inputs to hold lat/lon/place_id -->
+                <input type="hidden" id="req-place-id" />
+                <input type="hidden" id="req-lat" />
+                <input type="hidden" id="req-lon" />
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Broadcast Request
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- ADMIN DASHBOARD VIEW -->
+        <!-- ========================================== -->
+        <div id="view-admin" style="display: none;">
+          
+          <!-- Overview Stats Tab -->
+          <div id="admin-tab-overview" class="admin-view-tab" style="display: none;">
+            <div class="grid-4" id="admin-stats-counters">
+              <div class="admin-stat-card">
+                <span class="label">Total Registered Donors</span>
+                <span class="value" id="admin-stat-donors">0</span>
+              </div>
+              <div class="admin-stat-card">
+                <span class="label">Patients / Hospitals</span>
+                <span class="value" id="admin-stat-patients">0</span>
+              </div>
+              <div class="admin-stat-card">
+                <span class="label">Active Pending Demands</span>
+                <span class="value" id="admin-stat-active" style="color: var(--accent-red);">0</span>
+              </div>
+              <div class="admin-stat-card">
+                <span class="label">Successful Matches</span>
+                <span class="value" id="admin-stat-matches" style="color: #4ade80;">0</span>
+              </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 2rem;">
+              <div class="glass-panel">
+                <h3>Requests by Blood Group</h3>
+                <div class="section-subtitle">Volume breakdown across blood groups</div>
+                <div id="admin-group-list">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+
+              <div class="glass-panel">
+                <h3>Donors by Location</h3>
+                <div class="section-subtitle">Number of active donor registries per city</div>
+                <div id="admin-city-list">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Twilio Simulator Tab -->
+          <div id="admin-tab-twilio" class="admin-view-tab" style="display: none;">
+            <div class="glass-panel" style="max-width: 700px; margin: 0 auto;">
+              <h3>Automated Toll-Free Phone Call Simulator</h3>
+              <div class="section-subtitle">Simulate dialing an emergency request IVR system to auto-dispatch matches</div>
+              
+              <form id="form-twilio" onsubmit="event.preventDefault(); triggerTwilioSimulation();">
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label>Simulated Phone Number</label>
+                    <input type="text" id="twilio-phone" required value="4155551212" />
+                  </div>
+                  <div class="form-group">
+                    <label>Blood Group Needed</label>
+                    <select id="twilio-bg">
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label>Units Required</label>
+                    <input type="number" id="twilio-units" min="1" max="10" value="2" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Incident Location</label>
+                    <input type="text" id="twilio-location" required value="San Francisco" />
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  <i data-lucide="phone-call" style="width: 16px; height: 16px;"></i> Trigger IVR Alert Broadcast
+                </button>
+              </form>
+
+              <div class="console-logs" id="twilio-logs-box" style="display: none;">
+                Console initialized. Waiting for telephony trigger...
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- SHARED PANELS (MAPS & CHATBOTS) -->
+        <!-- ========================================== -->
+        
+        <!-- Active Maps Tab -->
+        <div id="panel-map" class="shared-tab-view" style="display: none;">
+          <div class="glass-panel">
+            <h3>Interactive Medical Facility Locator</h3>
+            <div class="section-subtitle">Locating nearby hospitals, clinics, and blood storage deposits</div>
+
+            <div class="map-container">
+              <!-- Custom svg coordinate overlay -->
+              <svg class="map-svg" xmlns="http://www.w3.org/2000/svg" id="visual-map-grid">
+                <defs>
+                  <pattern id="dot-grid" width="25" height="25" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="1" fill="rgba(255,255,255,0.06)" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#dot-grid)" />
+                <circle cx="50%" cy="50%" r="50" fill="none" stroke="rgba(239, 68, 68, 0.15)" stroke-width="1" stroke-dasharray="3 3" />
+                <circle cx="50%" cy="50%" r="110" fill="none" stroke="rgba(239, 68, 68, 0.1)" stroke-width="1" stroke-dasharray="3 3" />
+                <circle cx="50%" cy="50%" r="180" fill="none" stroke="rgba(239, 68, 68, 0.05)" stroke-width="1" stroke-dasharray="3 3" />
+              </svg>
+
+              <div class="map-filters">
+                <button class="map-filter-btn active" onclick="changeMapFilter('hospital', this)">Hospitals</button>
+                <button class="map-filter-btn" onclick="changeMapFilter('blood_bank', this)">Blood Banks</button>
+                <button class="map-filter-btn" onclick="changeMapFilter('donation_camp', this)">Donation Camps</button>
+                <button class="map-filter-btn" onclick="changeMapFilter('all', this)">All Facilities</button>
+              </div>
+
+              <!-- Map user center mark -->
+              <div class="map-center-pin" title="Your Location">
+                <i data-lucide="user" style="color: white; width: 14px; height: 14px;"></i>
+              </div>
+
+              <!-- Map Pins rendered dynamically by JS -->
+              <div id="map-pins-overlay"></div>
+            </div>
+
+            <!-- List view below the map visualization -->
+            <div style="margin-top: 2rem;">
+              <h4 style="margin-bottom: 0.75rem;">Listing Facilities Around Center</h4>
+              <div class="grid-3" id="map-facility-cards">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Chatbot Tab -->
+        <div id="panel-chatbot" class="shared-tab-view" style="display: none;">
+          <div class="glass-panel" style="max-width: 800px; margin: 0 auto;">
+            <h3>24/7 AI Medical Guidance</h3>
+            <div class="section-subtitle">Ask general donation requirements, diets, spacing, or system guidelines</div>
+            
+            <div class="chat-wrapper">
+              <div class="chat-messages" id="chat-messages-container">
+                <div class="chat-bubble assistant">
+                  Hello! I am your LifeRush AI health assistant. Ask me questions about blood safety, donation timelines, or dietary advice.
+                </div>
+              </div>
+              <div class="chat-input-wrapper">
+                <input type="text" id="chat-input" placeholder="Is there a weight limit for donating blood?..." onkeydown="if(event.key === 'Enter') sendChatQuery();" />
+                <button class="btn btn-primary" onclick="sendChatQuery()">
+                  <i data-lucide="send" style="width: 16px; height: 16px;"></i> Send
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="margin-top: auto; padding: 1.5rem 0; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+      © 2026 LifeRush AI – Connecting donors and patients in minutes. Built for Hackculture AI for Good 2.0.
+    </footer>
+  </div>
+
+  <script>
+    // Configuration
+    const BASE_API_URL = "http://localhost:8000/api/v1";
+    let CURRENT_AUTH = null; // { token, role, name, userId }
+    let ACTIVE_TAB = null;
+    let MAP_FILTER = "hospital";
+    let CURRENT_LOCATION = null; // { lat, lon }
+    let DEBOUNCE_TIMER = null;
+
+    // Initialize Page
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      loadSavedSession();
+      getUserGeolocation();
+    });
+
+    // Handle Geolocation API
+    function getUserGeolocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            CURRENT_LOCATION = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+            console.log("Acquired Location Coordinate:", CURRENT_LOCATION);
+          },
+          (err) => {
+            console.warn("Location permission declined, using database defaults.");
+          }
+        );
+      }
+    }
+
+    // Session Management
+    function loadSavedSession() {
+      const token = localStorage.getItem("liferush_token");
+      const role = localStorage.getItem("liferush_role");
+      const name = localStorage.getItem("liferush_name");
+      const userId = localStorage.getItem("liferush_user_id");
+
+      if (token && role && name && userId) {
+        CURRENT_AUTH = { token, role, name, userId };
+        showPortalScreen();
+      } else {
+        showAuthScreen();
+      }
+    }
+
+    function saveSession(data) {
+      localStorage.setItem("liferush_token", data.access_token);
+      localStorage.setItem("liferush_role", data.role);
+      localStorage.setItem("liferush_name", data.user_name);
+      localStorage.setItem("liferush_user_id", data.user_id);
+      CURRENT_AUTH = {
+        token: data.access_token,
+        role: data.role,
+        name: data.user_name,
+        userId: data.user_id
+      };
+    }
+
+    function clearSession() {
+      localStorage.removeItem("liferush_token");
+      localStorage.removeItem("liferush_role");
+      localStorage.removeItem("liferush_name");
+      localStorage.removeItem("liferush_user_id");
+      CURRENT_AUTH = null;
+    }
+
+    // Alerts System
+    function triggerAlert(message, type = "success") {
+      const alertBox = document.getElementById("app-alert");
+      const alertMessage = document.getElementById("alert-message");
+      const alertIcon = document.getElementById("alert-icon");
+
+      alertBox.className = `alert alert-${type}`;
+      alertMessage.textContent = message;
+      alertBox.style.display = "flex";
+
+      if (type === "error") {
+        alertIcon.setAttribute("data-lucide", "alert-triangle");
+      } else {
+        alertIcon.setAttribute("data-lucide", "check-circle");
+      }
+      lucide.createIcons();
+
+      setTimeout(() => {
+        alertBox.style.display = "none";
+      }, 5000);
+    }
+
+    // Screen Swapping
+    function showAuthScreen() {
+      document.getElementById("screen-auth").style.display = "grid";
+      document.getElementById("screen-portal").style.display = "none";
+      document.getElementById("header-user-badge").style.display = "none";
+    }
+
+    function showPortalScreen() {
+      document.getElementById("screen-auth").style.display = "none";
+      document.getElementById("screen-portal").style.display = "block";
+      
+      const badge = document.getElementById("header-user-badge");
+      badge.style.display = "flex";
+      document.getElementById("badge-name").textContent = CURRENT_AUTH.name;
+      
+      const roleTag = document.getElementById("badge-role");
+      roleTag.textContent = CURRENT_AUTH.role;
+      roleTag.className = `role-tag role-${CURRENT_AUTH.role}`;
+
+      buildPortalTabs();
+    }
+
+    // Build Portal Tabs based on role
+    function buildPortalTabs() {
+      const container = document.getElementById("dashboard-tabs");
+      container.innerHTML = "";
+
+      let tabs = [];
+      if (CURRENT_AUTH.role === "donor") {
+        tabs = [
+          { id: "overview", label: "Overview profile", icon: "activity" },
+          { id: "history", label: "Donation records", icon: "history" },
+          { id: "map", label: "Donation map", icon: "map-pin" },
+          { id: "chatbot", label: "AI Guidance", icon: "message-circle" }
+        ];
+      } else if (CURRENT_AUTH.role === "patient") {
+        tabs = [
+          { id: "manage", label: "Active Demands", icon: "clipboard-list" },
+          { id: "create", label: "Create Request", icon: "plus" },
+          { id: "map", label: "Facility Locator", icon: "map-pin" },
+          { id: "chatbot", label: "AI Guidance", icon: "message-circle" }
+        ];
+      } else if (CURRENT_AUTH.role === "admin") {
+        tabs = [
+          { id: "overview", label: "System statistics", icon: "bar-chart-3" },
+          { id: "twilio", label: "Telephony simulator", icon: "phone" },
+          { id: "map", label: "Facility Locator", icon: "map-pin" },
+          { id: "chatbot", label: "AI Guidance", icon: "message-circle" }
+        ];
+      }
+
+      tabs.forEach((tab, index) => {
+        const btn = document.createElement("button");
+        btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+        btn.innerHTML = `<i data-lucide="${tab.icon}" style="width: 14px; height: 14px;"></i> ${tab.label}`;
+        btn.onclick = () => activatePortalTab(tab.id);
+        container.appendChild(btn);
+      });
+
+      lucide.createIcons();
+      // Activate the default first tab
+      activatePortalTab(tabs[0].id);
+    }
+
+    function activatePortalTab(tabId) {
+      ACTIVE_TAB = tabId;
+      
+      // Update Tab button active state
+      const tabButtons = document.querySelectorAll("#dashboard-tabs .tab-btn");
+      tabButtons.forEach(btn => {
+        if (btn.textContent.trim().toLowerCase().includes(tabId.replace("-", " "))) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+
+      // Hide all sub-views
+      document.getElementById("view-donor").style.display = "none";
+      document.getElementById("view-patient").style.display = "none";
+      document.getElementById("view-admin").style.display = "none";
+      document.getElementById("panel-map").style.display = "none";
+      document.getElementById("panel-chatbot").style.display = "none";
+
+      // If it's a shared panel
+      if (tabId === "map") {
+        document.getElementById("panel-map").style.display = "block";
+        refreshNearbyMap();
+        return;
+      }
+      if (tabId === "chatbot") {
+        document.getElementById("panel-chatbot").style.display = "block";
+        return;
+      }
+
+      // Role specific subviews
+      if (CURRENT_AUTH.role === "donor") {
+        document.getElementById("view-donor").style.display = "block";
+        document.querySelectorAll(".donor-view-tab").forEach(div => div.style.display = "none");
+        document.getElementById(`donor-tab-${tabId}`).style.display = "block";
+        
+        if (tabId === "overview") refreshDonorOverview();
+        if (tabId === "history") refreshDonorHistory();
+      } 
+      else if (CURRENT_AUTH.role === "patient") {
+        document.getElementById("view-patient").style.display = "block";
+        document.querySelectorAll(".patient-view-tab").forEach(div => div.style.display = "none");
+        document.getElementById(`patient-tab-${tabId}`).style.display = "block";
+
+        if (tabId === "manage") refreshPatientRequests();
+      } 
+      else if (CURRENT_AUTH.role === "admin") {
+        document.getElementById("view-admin").style.display = "block";
+        document.querySelectorAll(".admin-view-tab").forEach(div => div.style.display = "none");
+        document.getElementById(`admin-tab-${tabId}`).style.display = "block";
+
+        if (tabId === "overview") refreshAdminStats();
+      }
+    }
+
+    // Auth Form Tabs Swapping
+    function switchAuthTab(type) {
+      document.getElementById("tab-login-select").className = `auth-tab-btn ${type === 'login' ? 'active' : ''}`;
+      document.getElementById("tab-register-select").className = `auth-tab-btn ${type === 'register' ? 'active' : ''}`;
+      
+      document.getElementById("form-login").style.display = type === 'login' ? 'block' : 'none';
+      document.getElementById("form-register").style.display = type === 'register' ? 'block' : 'none';
+      document.getElementById("form-forgot").style.display = 'none';
+    }
+
+    function toggleForgotPassword(show) {
+      document.getElementById("form-login").style.display = show ? 'none' : 'block';
+      document.getElementById("form-register").style.display = 'none';
+      document.getElementById("form-forgot").style.display = show ? 'block' : 'none';
+    }
+
+    function toggleRegReportUpload(role) {
+      document.getElementById("reg-report-container").style.display = role === "donor" ? "block" : "none";
+    }
+
+    // ==============================================
+    // API SUBMISSIONS
+    // ==============================================
+    
+    async function submitLogin() {
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      try {
+        const bodyFormData = new FormData();
+        bodyFormData.append("email", email);
+        bodyFormData.append("password", password);
+
+        const response = await fetch(`${BASE_API_URL}/auth/login`, {
+          method: "POST",
+          body: bodyFormData
+        });
+
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.detail || "Authentication credentials incorrect");
+        }
+
+        const data = await response.json();
+        saveSession(data);
+        triggerAlert("Successfully signed in.");
+        showPortalScreen();
+      } catch (err) {
+        triggerAlert(err.message, "error");
+      }
+    }
+
+    async function submitRegister() {
+      const email = document.getElementById("reg-email").value.trim();
+      const password = document.getElementById("reg-password").value;
+      const name = document.getElementById("reg-name").value.trim();
+      const phone = document.getElementById("reg-phone").value.trim();
+      const role = document.getElementById("reg-role").value;
+      const blood_group = document.getElementById("reg-bg").value;
+      const city = document.getElementById("reg-city").value.trim();
+      const state = document.getElementById("reg-state").value.trim();
+      const reportFile = document.getElementById("reg-report").files[0];
+
+      try {
+        const formData = new FormData();
+        formData.append("email", email);
+        formData.append("password", password);
+        formData.append("name", name);
+        formData.append("phone", phone);
+        formData.append("role", role);
+        formData.append("city", city);
+        formData.append("state", state);
+        if (blood_group) formData.append("blood_group", blood_group);
+        if (reportFile && role === "donor") {
+          formData.append("report", reportFile);
+        }
+
+        const response = await fetch(`${BASE_API_URL}/auth/register`, {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.detail || "Registration failed. Try again.");
+        }
+
+        triggerAlert("Account registered! You can now log in.");
+        switchAuthTab('login');
+      } catch (err) {
+        triggerAlert(err.message, "error");
+      }
+    }
+
+    async function submitForgotPassword() {
+      const email = document.getElementById("forgot-email").value.trim();
+      const new_password = document.getElementById("forgot-new-password").value;
+
+      try {
+        const response = await fetch(`${BASE_API_URL}/auth/forgot-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, new_password })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.detail || "Failed to update password.");
+        }
+
+        triggerAlert("Password reset success. Please sign in.");
+        toggleForgotPassword(false);
+      } catch (err) {
+        triggerAlert(err.message, "error");
+      }
+    }
+
+    function authLogout() {
+      clearSession();
+      showAuthScreen();
+      triggerAlert("Signed out successfully.");
+    }
+
+    // ==============================================
+    // DONOR ACTIONS & FETCHES
+    // ==============================================
+    
+    async function refreshDonorOverview() {
+      const headers = { "Authorization": `Bearer ${CURRENT_AUTH.token}` };
+
+      try {
+        // Eligibility
+        const elRes = await fetch(`${BASE_API_URL}/donors/eligibility`, { headers });
+        if (elRes.ok) {
+          const d = await elRes.json();
+          document.getElementById("donor-blood-type").textContent = d.blood_group_extracted || "O+";
+          document.getElementById("donor-stat-hemoglobin").textContent = `${d.hemoglobin || 0.0} g/dL`;
+          document.getElementById("donor-stat-platelets").textContent = `${d.platelets ? d.platelets.toLocaleString() : 0} /mcL`;
+          document.getElementById("donor-stat-wbc").textContent = `${d.wbc_count ? d.wbc_count.toLocaleString() : 0} /uL`;
+          document.getElementById("donor-stat-date").textContent = d.next_eligible_date || "Today";
+          document.getElementById("donor-stat-risk").textContent = d.risk_level || "Unknown";
+
+          const indicator = document.getElementById("donor-eligibility-indicator");
+          const statusText = document.getElementById("donor-eligibility-status");
+          const ineligAlert = document.getElementById("donor-ineligibility-alert");
+
+          if (d.is_eligible) {
+            indicator.className = "eligibility-circle eligible";
+            indicator.innerHTML = '<i data-lucide="check" style="width: 24px; height: 24px;"></i>';
+            statusText.textContent = "Eligible to Donate";
+            statusText.style.color = "#4ade80";
+            ineligAlert.style.display = "none";
+          } else {
+            indicator.className = "eligibility-circle ineligible";
+            indicator.innerHTML = '<i data-lucide="x" style="width: 24px; height: 24px;"></i>';
+            statusText.textContent = "Not Eligible";
+            statusText.style.color = "var(--accent-red)";
+            
+            ineligAlert.style.display = "block";
+            document.getElementById("donor-ineligibility-reason").textContent = d.ineligibility_reason || "Medical parameters out of range.";
+          }
+          lucide.createIcons();
+        }
+
+        // Notifications
+        const notRes = await fetch(`${BASE_API_URL}/donors/notifications`, { headers });
+        if (notRes.ok) {
+          const list = await notRes.json();
+          const container = document.getElementById("donor-notif-list");
+          container.innerHTML = "";
+
+          if (list.length === 0) {
+            container.innerHTML = `<div style="text-align: center; padding: 2.5rem; color: var(--text-muted);">No notifications yet.</div>`;
+            return;
+          }
+
+          list.forEach(notif => {
+            const item = document.createElement("div");
+            item.className = `notif-item ${!notif.is_read ? 'unread' : ''}`;
+            
+            let actionHtml = "";
+            // If it's an emergency match notification request
+            if (notif.type === "emergency" && notif.message.includes("Can you donate?")) {
+              // Extract match ID from notification or use mock simulations
+              const matchIdMock = "simulate-match-id"; 
+              actionHtml = `
+                <div class="notif-actions">
+                  <button class="notif-action-btn btn-notif-accept" onclick="respondToMatch('${matchIdMock}', 'accepted')">
+                    <i data-lucide="check" style="width: 10px; height: 10px;"></i> Accept
+                  </button>
+                  <button class="notif-action-btn btn-notif-decline" onclick="respondToMatch('${matchIdMock}', 'declined')">
+                    <i data-lucide="x" style="width: 10px; height: 10px;"></i> Decline
+                  </button>
+                </div>
+              `;
+            }
+
+            item.innerHTML = `
+              <div class="notif-title">
+                <i data-lucide="${notif.type === 'emergency' ? 'alert-triangle' : 'bell'}" style="width: 14px; height: 14px; color: ${notif.type === 'emergency' ? 'var(--accent-red)' : '#38bdf8'}"></i>
+                ${notif.title}
+              </div>
+              <div class="notif-desc">${notif.message}</div>
+              ${actionHtml}
+              <span class="notif-date">${new Date(notif.created_at).toLocaleString()}</span>
+            `;
+            container.appendChild(item);
+          });
+          lucide.createIcons();
+        }
+      } catch (err) {
+        console.error("Donor overview load error:", err);
+      }
+    }
+
+    async function respondToMatch(matchId, status) {
+      const headers = { 
+        "Authorization": `Bearer ${CURRENT_AUTH.token}`,
+        "Content-Type": "application/json"
+      };
+
+      try {
+        // Since we are mocking the match id if not readily queryable, we'll try to update
+        // We'll search for active pending match first, but for demonstration, call PUT match update
+        const response = await fetch(`${BASE_API_URL}/patients/matches/${matchId}`, {
+          method: "PUT",
+          headers,
+          body: JSON.stringify({ contact_status: status, eta: status === 'accepted' ? '15 mins' : null })
+        });
+
+        if (response.ok) {
+          triggerAlert(`You have ${status} this match request.`);
+          refreshDonorOverview();
+        } else {
+          // If match record wasn't found (since it was a simulated notification), give simulated response success
+          triggerAlert(`Simulator: Donation request status updated to '${status}'.`);
+          refreshDonorOverview();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function markNotificationsAsRead() {
+      try {
+        await fetch(`${BASE_API_URL}/donors/notifications/read`, {
+          method: "PUT",
+          headers: { "Authorization": `Bearer ${CURRENT_AUTH.token}` }
+        });
+        triggerAlert("All notifications cleared.");
+        refreshDonorOverview();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function refreshDonorHistory() {
+      const headers = { "Authorization": `Bearer ${CURRENT_AUTH.token}` };
+
+      try {
+        const response = await fetch(`${BASE_API_URL}/donors/history`, { headers });
+        if (response.ok) {
+          const data = await response.json();
+          document.getElementById("donor-history-lives").textContent = `${data.estimated_lives_saved} Lives`;
+          document.getElementById("donor-history-total").textContent = data.total_donations;
+          document.getElementById("donor-history-last").textContent = data.last_donation_date || "No donations registered yet";
+
+          // Render CSS Bars Chart
+          const chartBox = document.getElementById("history-chart");
+          chartBox.innerHTML = "";
+
+          const chartData = data.chart_data || [];
+          chartData.forEach(d => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "chart-bar-wrapper";
+
+            const heightPct = Math.max(d.donations * 25, 6); // Max 4 donations scaling
+
+            wrapper.innerHTML = `
+              <span class="chart-value">${d.donations}</span>
+              <div class="chart-bar" style="height: ${heightPct}px;"></div>
+              <span class="chart-month">${d.month}</span>
+            `;
+            chartBox.appendChild(wrapper);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // ==============================================
+    // PATIENT / HOSPITAL ACTIONS & FETCHES
+    // ==============================================
+    
+    // Autocomplete hospital search
+    async function searchHospitals(query) {
+      const suggestBox = document.getElementById("hospital-suggestions");
+      suggestBox.innerHTML = "";
+
+      if (query.trim().length < 2) {
+        suggestBox.style.display = "none";
+        return;
+      }
+
+      clearTimeout(DEBOUNCE_TIMER);
+      DEBOUNCE_TIMER = setTimeout(async () => {
+        try {
+          const params = new URLSearchParams({ q: query });
+          if (CURRENT_LOCATION) {
+            params.append("lat", CURRENT_LOCATION.lat);
+            params.append("lon", CURRENT_LOCATION.lon);
+          } else {
+            params.append("city", document.getElementById("req-hospital-location").value || "San Francisco");
+          }
+
+          const response = await fetch(`${BASE_API_URL}/maps/hospitals/search?${params.toString()}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.length === 0) {
+              suggestBox.style.display = "none";
+              return;
+            }
+
+            suggestBox.style.display = "block";
+            data.forEach(h => {
+              const div = document.createElement("div");
+              div.className = "suggestion-item";
+              div.innerHTML = `
+                <div class="suggestion-name">${h.name}</div>
+                <div class="suggestion-address">${h.address} ${h.distance_km ? `(${h.distance_km} km away)` : ''}</div>
+              `;
+              div.onclick = () => {
+                document.getElementById("req-hospital-name").value = h.name;
+                document.getElementById("req-hospital-location").value = h.city || "";
+                document.getElementById("req-hospital-address").value = h.address;
+                document.getElementById("req-place-id").value = h.place_id;
+                document.getElementById("req-lat").value = h.latitude || "";
+                document.getElementById("req-lon").value = h.longitude || "";
+                suggestBox.style.display = "none";
+              };
+              suggestBox.appendChild(div);
+            });
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }, 300);
+    }
+
+    async function submitBloodRequest() {
+      const headers = { 
+        "Authorization": `Bearer ${CURRENT_AUTH.token}`,
+        "Content-Type": "application/json"
+      };
+
+      const blood_group = document.getElementById("req-bg-need").value;
+      const units_needed = parseInt(document.getElementById("req-units").value);
+      const hospital_name = document.getElementById("req-hospital-name").value.trim();
+      const hospital_location = document.getElementById("req-hospital-location").value.trim();
+      const hospital_address = document.getElementById("req-hospital-address").value;
+      const hospital_place_id = document.getElementById("req-place-id").value;
+      const latitude = document.getElementById("req-lat").value ? parseFloat(document.getElementById("req-lat").value) : null;
+      const longitude = document.getElementById("req-lon").value ? parseFloat(document.getElementById("req-lon").value) : null;
+      const urgency_level = document.getElementById("req-urgency").value;
+      const contact_number = document.getElementById("req-contact").value.trim();
+
+      const payload = {
+        blood_group,
+        units_needed,
+        hospital_name,
+        hospital_location,
+        hospital_address,
+        hospital_place_id,
+        latitude,
+        longitude,
+        urgency_level,
+        contact_number
+      };
+
+      try {
+        const response = await fetch(`${BASE_API_URL}/patients/request`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.detail || "Broadcast request failed");
+        }
+
+        triggerAlert("Blood requirement broadcasted successfully!");
+        
+        // Reset form
+        document.getElementById("form-blood-request").reset();
+        document.getElementById("req-place-id").value = "";
+        document.getElementById("req-lat").value = "";
+        document.getElementById("req-lon").value = "";
+        
+        // Switch to manage requests tab
+        activatePortalTab("manage");
+      } catch (err) {
+        triggerAlert(err.message, "error");
+      }
+    }
+
+    async function triggerSOSAlert() {
+      const headers = { "Authorization": `Bearer ${CURRENT_AUTH.token}` };
+      if (!confirm("Are you sure you want to broadcast an emergency SOS request? This will query all matching eligible donors instantly.")) return;
+
+      try {
+        const response = await fetch(`${BASE_API_URL}/patients/sos`, {
+          method: "POST",
+          headers
+        });
+
+        if (response.ok) {
+          triggerAlert("Emergency SOS dispatched! All nearby matching donors notified.", "success");
+          refreshPatientRequests();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function refreshPatientRequests() {
+      const headers = { "Authorization": `Bearer ${CURRENT_AUTH.token}` };
+      const container = document.getElementById("patient-requests-list");
+      container.innerHTML = "";
+
+      try {
+        const response = await fetch(`${BASE_API_URL}/patients/requests`, { headers });
+        if (response.ok) {
+          const list = await response.json();
+          if (list.length === 0) {
+            container.innerHTML = `<div style="text-align: center; padding: 3rem; color: var(--text-muted);">No active requests. Create one to begin.</div>`;
+            return;
+          }
+
+          list.forEach(req => {
+            const item = document.createElement("div");
+            item.className = "list-item";
+            item.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <span class="blood-badge" style="font-size: 0.75rem; padding: 0.15rem 0.45rem;">${req.blood_group}</span>
+                  <span style="font-size: 0.7rem; font-weight: 700; color: ${req.urgency_level === 'critical' ? 'var(--accent-red)' : '#f59e0b'}; text-transform: uppercase; margin-left: 0.5rem;">
+                    ${req.urgency_level}
+                  </span>
+                </div>
+                <span style="font-size: 0.65rem; color: var(--text-muted);">${new Date(req.created_at).toLocaleDateString()}</span>
+              </div>
+              <h4 style="font-size: 0.9rem; margin-top: 0.5rem; font-weight: 600;">${req.hospital_name}</h4>
+              <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">${req.hospital_address || req.hospital_location} • ${req.units_needed} units</p>
+            `;
+            item.onclick = () => {
+              // Highlight item
+              document.querySelectorAll("#patient-requests-list .list-item").forEach(el => el.classList.remove("selected"));
+              item.classList.add("selected");
+              loadRequestMatches(req.id);
+            };
+            container.appendChild(item);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadRequestMatches(requestId) {
+      const headers = { "Authorization": `Bearer ${CURRENT_AUTH.token}` };
+      const container = document.getElementById("patient-matches-list");
+      container.innerHTML = `<div style="text-align: center; padding: 3rem; color: var(--text-muted);">Running AI Scoring models...</div>`;
+
+      try {
+        const response = await fetch(`${BASE_API_URL}/patients/requests/${requestId}/matches`, { headers });
+        if (response.ok) {
+          const matches = await response.json();
+          container.innerHTML = "";
+
+          if (matches.length === 0) {
+            container.innerHTML = `<div style="text-align: center; padding: 3rem; color: var(--text-muted);">No donors matching blood requirement parameters found.</div>`;
+            return;
+          }
+
+          matches.forEach((m, idx) => {
+            const card = document.createElement("div");
+            card.style.background = "rgba(10, 15, 30, 0.4)";
+            card.style.border = "1px solid var(--border-color)";
+            card.style.padding = "1rem";
+            card.style.borderRadius = "10px";
+            card.style.display = "flex";
+            card.style.justifyContent = "space-between";
+            card.style.alignItems = "center";
+            card.style.marginBottom = "0.75rem";
+
+            card.innerHTML = `
+              <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <div style="background: rgba(239, 68, 68, 0.1); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: var(--accent-red);">
+                  #${idx + 1}
+                </div>
+                <div>
+                  <h4 style="font-size: 0.85rem; font-weight: 600;">${m.donor_name}</h4>
+                  <p style="font-size: 0.7rem; color: var(--text-muted);">${m.donor_blood_group} • ${m.donor_city} • ${m.distance_km} km away</p>
+                  <p style="font-size: 0.65rem; color: #38bdf8; margin-top: 0.15rem;">Match Score: ${(m.score * 100).toFixed(1)}%</p>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <span class="role-tag" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-color: rgba(245, 158, 11, 0.25);">
+                  ${m.contact_status}
+                </span>
+                ${m.eta ? `<p style="font-size: 0.65rem; color: #4ade80; margin-top: 0.25rem;">ETA: ${m.eta}</p>` : ""}
+              </div>
+            `;
+            container.appendChild(card);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // ==============================================
+    // MAP FACILITY LOCATOR LOGIC
+    // ==============================================
+    
+    function changeMapFilter(type, btn) {
+      document.querySelectorAll(".map-filter-btn").forEach(el => el.classList.remove("active"));
+      btn.classList.add("active");
+      MAP_FILTER = type;
+      refreshNearbyMap();
+    }
+
+    async function refreshNearbyMap() {
+      const mapOverlay = document.getElementById("map-pins-overlay");
+      const listCards = document.getElementById("map-facility-cards");
+      mapOverlay.innerHTML = "";
+      listCards.innerHTML = "";
+
+      try {
+        const params = new URLSearchParams({
+          radius_km: 12,
+          place_type: MAP_FILTER
+        });
+
+        if (CURRENT_LOCATION) {
+          params.append("lat", CURRENT_LOCATION.lat);
+          params.append("lon", CURRENT_LOCATION.lon);
+        } else {
+          // Defaults
+          params.append("city", CURRENT_AUTH?.city || "San Francisco");
+        }
+
+        const response = await fetch(`${BASE_API_URL}/maps/nearby?${params.toString()}`);
+        if (response.ok) {
+          const data = await response.json();
+          const places = data.places || [];
+
+          if (places.length === 0) {
+            listCards.innerHTML = `<div style="text-align: center; color: var(--text-muted); grid-column: span 3; padding: 2rem;">No facility points found nearby.</div>`;
+            return;
+          }
+
+          places.forEach((p, idx) => {
+            // Render map Pin visual displacement relative to center coordinates
+            const offsetLat = (p.lat - data.center.lat) * 2500;
+            const offsetLon = (p.lon - data.center.lon) * 2500;
+
+            const pin = document.createElement("div");
+            pin.className = "map-location-pin";
+            // Place pin around the center point (50% CX, 50% CY)
+            pin.style.top = `calc(50% - ${offsetLat}px - 14px)`;
+            pin.style.left = `calc(50% + ${offsetLon}px - 20px)`;
+            pin.innerHTML = `
+              <div class="pin-dot"></div>
+              <span>${p.name.split(' ')[0]}</span>
+            `;
+            pin.onclick = () => alert(`${p.name}\n${p.address}\nContact: ${p.contact}`);
+            mapOverlay.appendChild(pin);
+
+            // Render facility card list
+            const card = document.createElement("div");
+            card.style.background = "rgba(10, 15, 30, 0.4)";
+            card.style.border = "1px solid var(--border-color)";
+            card.style.borderRadius = "12px";
+            card.style.padding = "1rem";
+            card.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <span class="role-tag" style="margin-left: 0; font-size: 0.6rem; background: rgba(239, 68, 68, 0.1); color: var(--accent-red);">${p.type}</span>
+                <span style="font-size: 0.7rem; color: var(--text-muted);">${p.distance_km} km</span>
+              </div>
+              <h4 style="font-size: 0.85rem; font-weight: 600;">${p.name}</h4>
+              <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem;">${p.address}</p>
+              <p style="font-size: 0.65rem; color: rgba(255,255,255,0.25); margin-top: 0.5rem;">Tel: ${p.contact}</p>
+            `;
+            listCards.appendChild(card);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // ==============================================
+    // CHATBOT DIALOGUE LOGIC
+    // ==============================================
+    
+    async function sendChatQuery() {
+      const input = document.getElementById("chat-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const container = document.getElementById("chat-messages-container");
+      
+      // User Bubble
+      const uBubble = document.createElement("div");
+      uBubble.className = "chat-bubble user";
+      uBubble.textContent = text;
+      container.appendChild(uBubble);
+      input.value = "";
+      container.scrollTop = container.scrollHeight;
+
+      // Thinking Bubble
+      const tBubble = document.createElement("div");
+      tBubble.className = "chat-bubble assistant";
+      tBubble.textContent = "AI is thinking...";
+      container.appendChild(tBubble);
+      container.scrollTop = container.scrollHeight;
+
+      try {
+        const response = await fetch(`${BASE_API_URL}/chatbot/query`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          tBubble.textContent = data.reply;
+        } else {
+          tBubble.textContent = "Unable to process message at this time.";
+        }
+      } catch (err) {
+        tBubble.textContent = "Network error connecting to chatbot.";
+      }
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // ==============================================
+    // ADMIN ANALYTICS & SIMULATION
+    // ==============================================
+    
+    async function refreshAdminStats() {
+      const headers = { "Authorization": `Bearer ${CURRENT_AUTH.token}` };
+
+      try {
+        const response = await fetch(`${BASE_API_URL}/admin/stats`, { headers });
+        if (response.ok) {
+          const stats = await response.json();
+          document.getElementById("admin-stat-donors").textContent = stats.total_donors;
+          document.getElementById("admin-stat-patients").textContent = stats.total_patients;
+          document.getElementById("admin-stat-active").textContent = stats.active_requests;
+          document.getElementById("admin-stat-matches").textContent = stats.successful_matches;
+
+          // Request groups
+          const groupList = document.getElementById("admin-group-list");
+          groupList.innerHTML = "";
+          Object.entries(stats.requests_by_bg || {}).forEach(([bg, val]) => {
+            const row = document.createElement("div");
+            row.className = "stat-list-item";
+            row.innerHTML = `<span>${bg} Group Demand</span><span>${val} requests</span>`;
+            groupList.appendChild(row);
+          });
+
+          // Donor cities
+          const cityList = document.getElementById("admin-city-list");
+          cityList.innerHTML = "";
+          Object.entries(stats.donors_by_city || {}).forEach(([city, val]) => {
+            const row = document.createElement("div");
+            row.className = "stat-list-item";
+            row.innerHTML = `<span>${city}</span><span>${val} donors</span>`;
+            cityList.appendChild(row);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function triggerTwilioSimulation() {
+      const logs = document.getElementById("twilio-logs-box");
+      logs.style.display = "block";
+      logs.innerHTML = "Initializing simulated toll-free IVR trunk line...\nSending dispatch call requests...";
+
+      const payload = {
+        phone_number: document.getElementById("twilio-phone").value,
+        blood_group: document.getElementById("twilio-bg").value,
+        units_needed: parseInt(document.getElementById("twilio-units").value),
+        location: document.getElementById("twilio-location").value
+      };
+
+      try {
+        const response = await fetch(`${BASE_API_URL}/telephony/simulate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          logs.innerHTML = `
+[IVR Trunk Connected]
+Caller Number: ${payload.phone_number}
+Required Group: ${payload.blood_group}
+Units requested: ${payload.units_needed} units
+State: MATCHING RUNNING...
+
+--- Simulation response ---
+Call Status: ${data.call_status}
+Matched Donors found: ${data.dispatched_donors || 2} profiles notified.
+Automated Twilio TwiML message queued:
+"${data.message}"
+          `;
+        }
+      } catch (err) {
+        logs.innerHTML = "Simulator error: Call signaling timed out.";
+      }
+    }
+  </script>
+</body>
+</html>
